@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "corsairs.core", "corsairs.c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "corsairs.game", "corsairs.game\corsairs.game.csproj", "{89B83741-9EB7-4A53-B44B-0B72D3C1D875}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "corsairs.console", "corsairs.console\corsairs.console.csproj", "{F10A15E1-08DE-4483-954A-F5FEAC1A1291}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{89B83741-9EB7-4A53-B44B-0B72D3C1D875}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89B83741-9EB7-4A53-B44B-0B72D3C1D875}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89B83741-9EB7-4A53-B44B-0B72D3C1D875}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F10A15E1-08DE-4483-954A-F5FEAC1A1291}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F10A15E1-08DE-4483-954A-F5FEAC1A1291}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F10A15E1-08DE-4483-954A-F5FEAC1A1291}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F10A15E1-08DE-4483-954A-F5FEAC1A1291}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
