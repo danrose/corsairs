@@ -54,7 +54,7 @@ namespace corsairs.core.worldgen
             return drainage;
         }
 
-        public static ArrayMap<Biome> GenerateMap()
+        public static ArrayMap<Location> GenerateMap()
         {
             var height = CreateHeightMap();
             var drainage = CreateDrainageMap();
@@ -70,7 +70,17 @@ namespace corsairs.core.worldgen
             var biomes = BiomeClassifier.CreateBiomes(height, drainage, water);
             DetectBeaches(biomes, water);
 
-            return biomes;
+            var ret = new ArrayMap<Location>(biomes.Size);
+            // now construct locations
+            for (var h = 0; h < biomes.Size; h++)
+            {
+                for (var w = 0; w < biomes.Size; w++)
+                {
+                    ret[h, w] = new Location(w, h, biomes[h, w], height[h, w], water[h, w], drainage[h, w]);
+                }
+            }
+
+            return ret;
         }
 
         private static Beach beach = new Beach();

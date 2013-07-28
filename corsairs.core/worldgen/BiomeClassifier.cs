@@ -9,13 +9,7 @@ namespace corsairs.core.worldgen
 {
     public static class BiomeClassifier
     {
-        /// <summary>
-        /// Assigns biomes to each map square
-        /// </summary>
-        public static ArrayMap<Biome> CreateBiomes(ArrayMap<int> height, ArrayMap<int> drainage, ArrayMap<bool> water)
-        {
-            var biomes = new ArrayMap<Biome>(height.Size);
-            var biomeList = new List<Biome> 
+        private static List<Biome> biomeList = new List<Biome> 
 			{ 
 				new DeepWater(), 
 				new MidWater(),
@@ -27,8 +21,28 @@ namespace corsairs.core.worldgen
                 new Plains(),
                 new Tundra(),
                 new Rock(),
-                new Hills()
+                new Hills(),
+                new Beach()
 			};
+
+        private static Dictionary<char, Biome> lookup = biomeList.ToDictionary(x => x.DebugSymbol);
+
+        public static Biome LookupBiome(char symbol)
+        {
+            if (!lookup.ContainsKey(symbol))
+            {
+                throw new Exception("Unknown biome " + symbol);
+            }
+
+            return lookup[symbol];
+        }
+
+        /// <summary>
+        /// Assigns biomes to each map square
+        /// </summary>
+        public static ArrayMap<Biome> CreateBiomes(ArrayMap<int> height, ArrayMap<int> drainage, ArrayMap<bool> water)
+        {
+            var biomes = new ArrayMap<Biome>(height.Size);
 
             for (var h = 0; h < height.Size; h++)
             {

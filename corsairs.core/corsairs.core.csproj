@@ -60,6 +60,7 @@
     <Compile Include="worldgen\BeachCellularAutomaton.cs" />
     <Compile Include="worldgen\DiamondSquareAlgorithm.cs" />
     <Compile Include="worldgen\Generator.cs" />
+    <Compile Include="worldgen\Location.cs" />
     <Compile Include="worldgen\RainErosionAlgorithm.cs" />
     <Compile Include="worldgen\WaterCellularAutomaton.cs" />
     <Compile Include="worldgen\WaterErosionAlgorithm.cs" />

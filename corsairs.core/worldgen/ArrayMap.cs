@@ -20,11 +20,13 @@ namespace corsairs.core.worldgen
         public ArrayMap(ArrayMap<T> copy)
         {
             this.data = copy.data;
+            this.size = copy.size;
         }
 
         public void SetData(T[] data)
         {
             this.data = data;
+            this.size = data == null ? 0 : (int)Math.Sqrt(data.Length);
         }
 
         public T[] CopyData()

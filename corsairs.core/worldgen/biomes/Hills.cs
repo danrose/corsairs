@@ -15,7 +15,7 @@ namespace corsairs.core.worldgen.biomes
 
         public override char DebugSymbol
         {
-            get { return 'r'; }
+            get { return 'h'; }
         }
     }
 }
