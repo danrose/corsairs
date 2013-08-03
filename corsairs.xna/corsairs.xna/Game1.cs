@@ -23,6 +23,8 @@ namespace corsairs.xna
         SpriteBatch spriteBatch;
         Texture2D texture;
         ArrayMap<Location> locations;
+        Random seed = new Random();
+        byte[] spritePriming = new byte[16];
 
         Dictionary<char, Color> colourMap = new Dictionary<char, Color>
         {
@@ -32,9 +34,9 @@ namespace corsairs.xna
             {'.', Color.Blue},
             {'g', Color.LightGreen},
             {'h', Color.Red},
-             {'m', Color.DarkSeaGreen},
-             {'M', Color.White},
-             {'f', Color.DarkGreen},
+            {'m', Color.DarkSeaGreen},
+            {'M', Color.White},
+            {'f', Color.DarkGreen},
             {'i', Color.White},
             {'G', Color.Green},
             {'p', Color.LightGoldenrodYellow},
@@ -42,6 +44,8 @@ namespace corsairs.xna
             {'s', Color.Brown},
             {'t', Color.GhostWhite}
         };
+
+        Texture2D tileset;
 
         public Game1()
         {
@@ -65,6 +69,7 @@ namespace corsairs.xna
             // TODO: Add your initialization logic here
 
             base.Initialize();
+            seed.NextBytes(spritePriming);
         }
 
         /// <summary>
@@ -106,6 +111,8 @@ namespace corsairs.xna
             Console.WriteLine("Took " + sw.ElapsedMilliseconds + " ms.");
             texture = new Texture2D(GraphicsDevice, 1, 1);
             texture.SetData(new Color[] { Color.White });
+
+            tileset = Content.Load<Texture2D>("tileset");
         }
 
         /// <summary>
@@ -147,10 +154,12 @@ namespace corsairs.xna
                 for (var y = 0; y < locations.Size; y++)
                 {
                     var location = locations[x, y];
-                    spriteBatch.Draw(texture, new Rectangle(x * 8, y * 8, 8, 8), location.Biome == null ? Color.Black : colourMap[location.Biome.DebugSymbol]);
+                    var spriteIndex = spritePriming[(x ^ 37 * y) % 16] % 3;
+                    //spriteBatch.Draw(texture, new Rectangle(x * 8, y * 8, 8, 8), location.Biome == null ? Color.Black : colourMap[location.Biome.DebugSymbol]);
                     //spriteBatch.Draw(texture, new Rectangle(x * 8, y * 8, 8, 8), new Color(location.IsWater ? 128 : 0, location.IsWater ? 128 : 0, location.IsWater ? 128 : 0));
                     //spriteBatch.Draw(texture, new Rectangle(x * 8, y * 8, 8, 8), new Color(location.Drainage, location.Drainage,location.Drainage));
                     //spriteBatch.Draw(texture, new Rectangle(x * 8, y * 8, 8, 8), new Color(location.Height, location.Height,location.Height));
+                    spriteBatch.Draw(tileset, new Rectangle(x * 8, y * 8, 8, 8), new Rectangle((int)location.Biome.DebugSymbol * 8, spriteIndex * 8, 8, 8), Color.White);
                 }
             }
 
