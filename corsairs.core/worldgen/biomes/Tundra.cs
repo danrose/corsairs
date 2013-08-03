@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 
 namespace corsairs.core.worldgen.biomes
 {
-    public class Tundra : Biome
+    public class Tundra : Land
     {
-        public override bool ConditionsMet(int height, int drainage, bool isWater, double temp)
+        public override int MaxTemp
         {
-            return temp < 2 && !isWater;
+            get
+            {
+                return 3;
+            }
         }
 
         public override char DebugSymbol

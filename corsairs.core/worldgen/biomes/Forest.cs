@@ -6,27 +6,28 @@ using System.Threading.Tasks;
 
 namespace corsairs.core.worldgen.biomes
 {
-    public class Ice : Water
+    public class Forest : Land
     {
-        public override int MaxTemp
+        public override int MinDrainage
         {
             get
             {
-                return 4;
+                return 50;
             }
         }
+
 
         public override int MinTemp
         {
             get
             {
-                return -273;
+                return 10;
             }
         }
 
         public override char DebugSymbol
         {
-            get { return 'i'; }
+            get { return 'f'; }
         }
     }
 }

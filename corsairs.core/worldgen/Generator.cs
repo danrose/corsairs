@@ -11,11 +11,13 @@ namespace corsairs.core.worldgen
     {
         private static readonly Random seed = new Random();
         private const int Generations = 6;
+        public const int MaxHeight = 255;
+        public const int MaxDrainage = 100;
 
         private static ArrayMap<int> CreateHeightMap()
         {
             var height = new ArrayMap<int>(2);
-            height.SetData(new[] { 85, 85, 85, 85 });
+            height.SetData(new[] { 100, 100, 100, 100 });
 
             var heightAlgo = new DiamondSquareAlgorihm { Square = height };
 
@@ -25,7 +27,7 @@ namespace corsairs.core.worldgen
             {
                 height = height.DoubleInSize();
                 heightAlgo.Square = height;
-                heightAlgo.HeightRandomiser = MinMaxRandomiserFactory(seed, heightRandomisation, 0, 255);
+                heightAlgo.HeightRandomiser = MinMaxRandomiserFactory(seed, heightRandomisation, 0, MaxHeight);
                 heightRandomisation = ReduceRandomisation(heightRandomisation, 0.88);
                 heightAlgo.DiamondStep();
                 heightAlgo.SquareStep();
@@ -37,15 +39,15 @@ namespace corsairs.core.worldgen
         private static ArrayMap<int> CreateDrainageMap()
         {
             var drainage = new ArrayMap<int>(2);
-            drainage.SetData(new[] { seed.Next(50), seed.Next(50), seed.Next(50), seed.Next(50) });
+            drainage.SetData(new[] { seed.Next(70), seed.Next(70), seed.Next(70), seed.Next(70) });
             var drainageAlgo = new DiamondSquareAlgorihm { Square = drainage };
-            var drainRandomisation = 70;
+            var drainRandomisation = 50;
 
             for (var drainGen = 0; drainGen < Generations; drainGen++)
             {
                 drainage = drainage.DoubleInSize();
                 drainageAlgo.Square = drainage;
-                drainageAlgo.HeightRandomiser = MinMaxRandomiserFactory(seed, drainRandomisation, 0, 100);
+                drainageAlgo.HeightRandomiser = MinMaxRandomiserFactory(seed, drainRandomisation, 0, MaxDrainage);
                 drainRandomisation = ReduceRandomisation(drainRandomisation, 0.7);
                 drainageAlgo.DiamondStep();
                 drainageAlgo.SquareStep();
@@ -60,12 +62,12 @@ namespace corsairs.core.worldgen
             var drainage = CreateDrainageMap();
 
             // create water table
-            var water = height.Translate(x => x < 80);
+            var water = height.Translate(x => x < 75);
             var mountainMask = height.Translate(x => x > 130);
 
             RainErosionAlgorithm.PerformErosion(height, water, seed, 15000, mountainMask);
             WaterCellularAutomaton.Apply(water, 4, 4);
-            WaterErosionAlgorithm.Apply(height, water, 15);
+            WaterErosionAlgorithm.Apply(height, water, 30);
 
             var biomes = BiomeClassifier.CreateBiomes(height, drainage, water);
             DetectBeaches(biomes, water);

@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 
 namespace corsairs.core.worldgen.biomes
 {
-    public class ShallowWater : Biome
+    public class ShallowWater : Water
     {
-        public override bool ConditionsMet(int height, int drainage, bool isWater, double temp)
+        public override int MinHeight
         {
-            return temp > 4 && isWater && height >= 80;
+            get
+            {
+                return 75;
+            }
         }
 
         public override char DebugSymbol

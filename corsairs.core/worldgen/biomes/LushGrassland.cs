@@ -6,11 +6,38 @@ using System.Threading.Tasks;
 
 namespace corsairs.core.worldgen.biomes
 {
-    public class LushGrassland : Biome
+    public class LushGrassland : TemperateLand
     {
-        public override bool ConditionsMet(int height, int drainage, bool isWater, double temp)
+        public override int MinDrainage
         {
-            return temp > 11 && !isWater && drainage > 20 && temp < 35;
+            get
+            {
+                return 15;
+            }
+        }
+
+        public override int MaxDrainage
+        {
+            get
+            {
+                return 50;
+            }
+        }
+
+        public override int MaxTemp
+        {
+            get
+            {
+                return 35;
+            }
+        }
+
+        public override int MinTemp
+        {
+            get
+            {
+                return 14;
+            }
         }
 
         public override char DebugSymbol

@@ -32,7 +32,7 @@ namespace corsairs.core.worldgen
                         }
                     }
 
-                    beaches[h, w] = waterCount >= 3 && landCount >= 3;
+                    beaches[h, w] = waterCount >= 3 && landCount >= 4;
                 }
             }
         }

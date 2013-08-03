@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>corsairs.core</RootNamespace>
     <AssemblyName>corsairs.core</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,6 +47,9 @@
     <Compile Include="worldgen\BiomeClassifier.cs" />
     <Compile Include="worldgen\biomes\Biome.cs" />
     <Compile Include="worldgen\biomes\Beach.cs" />
+    <Compile Include="worldgen\biomes\Mountain.cs" />
+    <Compile Include="worldgen\biomes\Forest.cs" />
+    <Compile Include="worldgen\biomes\Marsh.cs" />
     <Compile Include="worldgen\biomes\Hills.cs" />
     <Compile Include="worldgen\biomes\Ice.cs" />
     <Compile Include="worldgen\biomes\Tundra.cs" />

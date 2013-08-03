@@ -11,18 +11,22 @@ namespace corsairs.core.worldgen
     {
         private static List<Biome> biomeList = new List<Biome> 
 			{ 
-				new DeepWater(), 
+
+                new DeepWater(), 
 				new MidWater(),
                 new ShallowWater(),
                 new Ice(),
-				new LushGrassland(),
+                new Mountain(),
+				new Rock(),
+                new LushGrassland(),
                 new Grassland(),
-                new Swamp(),
                 new Plains(),
                 new Tundra(),
-                new Rock(),
+                new Forest(),
                 new Hills(),
-                new Beach()
+                new Marsh(),
+                new Swamp(),
+                new Beach(),
 			};
 
         private static Dictionary<char, Biome> lookup = biomeList.ToDictionary(x => x.DebugSymbol);
