@@ -148,13 +148,14 @@ namespace corsairs.xna
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
+            var waterFrameOffset = (gameTime.TotalGameTime.Milliseconds / 300) % 3;
 
             for (var x = 0; x < locations.Size; x++)
             {
                 for (var y = 0; y < locations.Size; y++)
                 {
                     var location = locations[x, y];
-                    var spriteIndex = spritePriming[(x ^ 37 * y) % 16] % 3;
+                    var spriteIndex = (spritePriming[(x ^ 37 * y) % 16] + (location.IsWater ? waterFrameOffset : 0)) % 3;
                     //spriteBatch.Draw(texture, new Rectangle(x * 8, y * 8, 8, 8), location.Biome == null ? Color.Black : colourMap[location.Biome.DebugSymbol]);
                     //spriteBatch.Draw(texture, new Rectangle(x * 8, y * 8, 8, 8), new Color(location.IsWater ? 128 : 0, location.IsWater ? 128 : 0, location.IsWater ? 128 : 0));
                     //spriteBatch.Draw(texture, new Rectangle(x * 8, y * 8, 8, 8), new Color(location.Drainage, location.Drainage,location.Drainage));
