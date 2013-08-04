@@ -16,6 +16,7 @@ namespace corsairs.core.worldgen.biomes
         public virtual int MaxTemp { get { return 999; } }
         public virtual bool InWater { get { return true; } }
         public virtual bool InLand { get { return true; } }
+        public virtual bool SuitableForPOI { get { return false; } }
 
         public virtual bool ConditionsMet(int height, int drainage, bool isWater, double temp)
         {

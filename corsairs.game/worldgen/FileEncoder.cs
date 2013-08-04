@@ -12,7 +12,7 @@ namespace corsairs.game.worldgen
     {
         private const string header = "corsairs-terrain-file";
         private static int headerLength = header.Length;
-        private static int recordLength = 1 + 3 + 3 + 1;
+        private const int recordLength = 1 + 3 + 3 + 3 + 1 + 1;
 
         public static string Encode(ArrayMap<Location> locations)
         {
@@ -24,11 +24,13 @@ namespace corsairs.game.worldgen
                 for (var w = 0; w < locations.Size; w++)
                 {
                     var loc = locations[h, w];
-                    ret.AppendFormat("{0}{1}{2}{3}",
+                    ret.AppendFormat("{0}{1}{2}{3}{4}{5}",
                         loc.Biome.DebugSymbol,
                         loc.Height.ToString().PadLeft(3),
                         loc.Drainage.ToString().PadLeft(3),
-                        loc.IsWater ? "1" : "0"
+                        loc.Erosion.ToString().PadLeft(3),
+                        loc.IsWater ? "1" : "0",
+                        loc.SuitableForPOI ? "1" : "0"
                     );
                 }
             }
@@ -59,9 +61,11 @@ namespace corsairs.game.worldgen
                 var biome = BiomeClassifier.LookupBiome(buf[i]);
                 var height = int.Parse(new string(buf, i + 1, 3).Trim());
                 var drainage = int.Parse(new string(buf, i + 4, 3).Trim());
-                var isWater = buf[i + 7] == '1';
+                var erosion = int.Parse(new string(buf, i + 7, 3).Trim());
+                var isWater = buf[i + 10] == '1';
+                var suitableForPOI = buf[i + 11] == '1';
 
-                ret[count] = new Location(count % size, count / size, biome, height, isWater, drainage);
+                ret[count] = new Location(count % size, count / size, biome, height, erosion, isWater, drainage, suitableForPOI);
 
                 // move offset to next record
                 i += recordLength;

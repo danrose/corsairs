@@ -56,31 +56,46 @@ namespace corsairs.core.worldgen
             return drainage;
         }
 
+        private static bool IsPlayable(ArrayMap<bool> water)
+        {
+            var isWater = water.CopyData();
+            var countOfWater = (double)isWater.Count(x => x);
+            return countOfWater / water.Count > 0.4;
+        }
+
         public static ArrayMap<Location> GenerateMap()
         {
-            var height = CreateHeightMap();
-            var drainage = CreateDrainageMap();
+            ArrayMap<bool> water;
+            ArrayMap<Location> ret;
 
-            // create water table
-            var water = height.Translate(x => x < 75);
-            var mountainMask = height.Translate(x => x > 130);
-
-            RainErosionAlgorithm.PerformErosion(height, water, seed, 15000, mountainMask);
-            WaterCellularAutomaton.Apply(water, 4, 4);
-            WaterErosionAlgorithm.Apply(height, water, 30);
-
-            var biomes = BiomeClassifier.CreateBiomes(height, drainage, water);
-            DetectBeaches(biomes, water);
-
-            var ret = new ArrayMap<Location>(biomes.Size);
-            // now construct locations
-            for (var h = 0; h < biomes.Size; h++)
+            do
             {
-                for (var w = 0; w < biomes.Size; w++)
+                var height = CreateHeightMap();
+                var drainage = CreateDrainageMap();
+
+                // create water table
+                water = height.Translate(x => x < 75);
+                var mountainMask = height.Translate(x => x > 130);
+                var erosionMap = new ArrayMap<int>(water.Size);
+
+                RainErosionAlgorithm.PerformErosion(height, erosionMap, water, seed, 15000, mountainMask);
+                WaterCellularAutomaton.Apply(water, 4, 5);
+                WaterErosionAlgorithm.Apply(height, water, 30);
+
+                var biomes = BiomeClassifier.CreateBiomes(height, drainage, water);
+                DetectBeaches(biomes, water);
+
+                ret = new ArrayMap<Location>(biomes.Size);
+                // now construct locations
+                for (var h = 0; h < biomes.Size; h++)
                 {
-                    ret[h, w] = new Location(w, h, biomes[h, w], height[h, w], water[h, w], drainage[h, w]);
+                    for (var w = 0; w < biomes.Size; w++)
+                    {
+                        ret[h, w] = new Location(w, h, biomes[h, w], height[h, w], erosionMap[h, w], water[h, w], drainage[h, w], biomes[h, w].SuitableForPOI);
+                    }
                 }
             }
+            while (!IsPlayable(water));
 
             return ret;
         }

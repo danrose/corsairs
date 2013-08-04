@@ -13,17 +13,21 @@ namespace corsairs.core.worldgen
         private readonly int y;
         private readonly Biome biome;
         private readonly int height;
+        private readonly int erosion;
         private readonly bool isWater;
+        private readonly bool suitableForPOI;
         private readonly int drainage;
 
         public int X { get { return x; } }
         public int Y { get { return y; } }
         public Biome Biome { get { return biome; } }
         public int Height { get { return height; } }
+        public int Erosion { get { return erosion; } }
         public bool IsWater { get { return isWater; } }
         public int Drainage { get { return drainage; } }
-        
-        public Location(int x, int y, Biome biome, int height, bool isWater, int drainage)
+        public bool SuitableForPOI { get { return suitableForPOI; } }
+
+        public Location(int x, int y, Biome biome, int height, int erosion, bool isWater, int drainage, bool suitableForPOI)
         {
             this.x = x;
             this.y = y;
@@ -31,6 +35,8 @@ namespace corsairs.core.worldgen
             this.isWater = isWater;
             this.drainage = drainage;
             this.biome = biome;
+            this.erosion = erosion;
+            this.suitableForPOI = suitableForPOI;
         }
     }
 }

@@ -38,7 +38,7 @@ namespace corsairs.core.worldgen
         /// <summary>
         /// Erode terrain by dropping (eroding) rain downwards from random mountain starting points
         /// </summary>
-        public static void PerformErosion(ArrayMap<int> heightMap, ArrayMap<bool> water, Random seed, int reps, ArrayMap<bool> mask)
+        public static void PerformErosion(ArrayMap<int> heightMap, ArrayMap<int> erosionMap, ArrayMap<bool> water, Random seed, int reps, ArrayMap<bool> mask)
         {
             var size = heightMap.Size;
             var copy = new ArrayMap<int>(size);
@@ -51,7 +51,7 @@ namespace corsairs.core.worldgen
 
                 if (mask[h, w])
                 {
-                    ConsiderEroding(heightMap, water, copy, h, w, 0);
+                    ConsiderEroding(heightMap, erosionMap, water, copy, h, w, 0);
                 }
             }
         }
@@ -66,7 +66,7 @@ namespace corsairs.core.worldgen
             return heightMap[h, w];
         }
 
-        private static void ConsiderEroding(ArrayMap<int> heightMap, ArrayMap<bool> water, ArrayMap<int> erodeMap, int h, int w, int sediment)
+        private static void ConsiderEroding(ArrayMap<int> heightMap, ArrayMap<int> erosionMap, ArrayMap<bool> water, ArrayMap<int> erodeMap, int h, int w, int sediment)
         {
             int outH, outW;
             var neighbours = heightMap.Surroundings(h, w);
@@ -74,10 +74,11 @@ namespace corsairs.core.worldgen
             if (FindLowestSurrounding(heightMap, heightMap[h, w], neighbours, out outH, out outW))
             {
                 LowerTerrain(heightMap, outH, outW);
+                erosionMap[h, w]++;
                 sediment++;
 
                 // recurse to the downhill location
-                ConsiderEroding(heightMap, water, erodeMap, outH, outW, sediment);
+                ConsiderEroding(heightMap, erosionMap, water, erodeMap, outH, outW, sediment);
             }
             else
             {
@@ -95,6 +96,7 @@ namespace corsairs.core.worldgen
 
                 heightMap[h, w] += sediment;
                 water[h, w] = true;
+                erosionMap[h, w]++;
             }
         }
     }

@@ -17,5 +17,13 @@ namespace corsairs.core.worldgen.biomes
         {
             get { return 'b'; }
         }
+
+        public override bool SuitableForPOI
+        {
+            get
+            {
+                return true;
+            }
+        }
     }
 }

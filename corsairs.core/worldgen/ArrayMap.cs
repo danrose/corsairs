@@ -41,6 +41,11 @@ namespace corsairs.core.worldgen
             get { return size; }
         }
 
+        public int Count
+        {
+            get { return data.Length; }
+        }
+
         public T this[int x]
         {
             get
@@ -189,6 +194,18 @@ namespace corsairs.core.worldgen
             for (var i = 0; i < data.Length; i++)
             {
                 ret[i] = mapFunction(this[i]);
+            }
+
+            return ret;
+        }
+
+        public ArrayMap<TNew> Translate<TNew>(Func<T, int, TNew> mapFunction)
+        {
+            var ret = new ArrayMap<TNew>(size);
+
+            for (var i = 0; i < data.Length; i++)
+            {
+                ret[i] = mapFunction(this[i], i);
             }
 
             return ret;
