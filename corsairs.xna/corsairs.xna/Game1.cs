@@ -28,21 +28,21 @@ namespace corsairs.xna
 
         Dictionary<char, Color> colourMap = new Dictionary<char, Color>
         {
-            {'b', Color.Cornsilk},
-            {'#', Color.DarkBlue},
-            {'~', Color.Navy},
-            {'.', Color.Blue},
-            {'g', Color.LightGreen},
-            {'h', Color.Red},
-            {'m', Color.DarkSeaGreen},
-            {'M', Color.White},
-            {'f', Color.DarkGreen},
-            {'i', Color.White},
-            {'G', Color.Green},
-            {'p', Color.LightGoldenrodYellow},
-            {'r', Color.Gray},
-            {'s', Color.Brown},
-            {'t', Color.GhostWhite}
+            {'b', Color.Bisque},
+            {'#', Color.Bisque},
+            {'~', Color.Bisque},
+            {'.', Color.Bisque},
+            {'g', Color.Bisque},
+            {'h', Color.Bisque},
+            {'m', Color.Bisque},
+            {'M', Color.Bisque},
+            {'f', Color.Bisque},
+            {'i', Color.Bisque},
+            {'G', Color.Bisque},
+            {'p', Color.Bisque},
+            {'r', Color.Bisque},
+            {'s', Color.Bisque},
+            {'t', Color.Bisque}
         };
 
         Texture2D tileset;
