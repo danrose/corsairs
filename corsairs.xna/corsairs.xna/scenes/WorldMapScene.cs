@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using System.Diagnostics;
 using System.IO;
+using corsairs.core.worldgen.topography;
 
 namespace corsairs.xna.scenes
 {
@@ -15,8 +16,8 @@ namespace corsairs.xna.scenes
     {
         private Random seed = new Random();
         private byte[] spritePriming = new byte[16];
-        private ArrayMap<Location> locations;
         private Texture2D tileset;
+        private WorldMap worldMap;
 
         private Dictionary<char, Color> colourMap = new Dictionary<char, Color>
         {
@@ -63,7 +64,8 @@ namespace corsairs.xna.scenes
              else
              {*/
             Console.WriteLine("Writing new world to " + saveFile);
-            locations = Generator.GenerateMap();
+            LoadOceanNaming(content);
+            worldMap = Generator.GenerateMap();
             /* using (var writer = saveFileInfo.CreateText())
              {
                  var serialized = FileEncoder.Encode(locations);
@@ -75,6 +77,17 @@ namespace corsairs.xna.scenes
             sw.Stop();
             Console.WriteLine("Took " + sw.ElapsedMilliseconds + " ms.");
          
+        }
+
+        private void LoadOceanNaming(ContentManager content)
+        {
+            var waterAdjectives = content.Load<string[]>("waterAdjectives");
+            var waterNames = content.Load<string[]>("waterNames");
+            var waterNouns = content.Load<string[]>("waterNouns");
+            var waterPlurals = content.Load<string[]>("waterPlurals");
+            var waterPatterns = content.Load<string[]>("waterPatterns");
+
+            OceanNamer.Initialise(waterAdjectives, waterNames, waterNouns, waterPatterns, waterPlurals);
         }
 
         public void Update(GameTime gameTime)
@@ -90,6 +103,7 @@ namespace corsairs.xna.scenes
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             var waterFrameOffset = (gameTime.TotalGameTime.Milliseconds / 300) % 3;
+            var locations = worldMap.Locations;
 
             for (var x = 0; x < locations.Size; x++)
             {

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+  <!-- TODO: replace this Asset with your own XML asset data. -->
+  <Asset Type="System.String[]">
+    <Item>Pirates</Item>
+    <Item>Demons</Item>
+    <Item>Deaths</Item>
+    <Item>Sadness</Item>
+    <Item>Storms</Item>
+    <Item>Sorrows</Item>
+    <Item>Despairs</Item>
+    <Item>Dooms</Item>
+  </Asset>
+</XnaContent>

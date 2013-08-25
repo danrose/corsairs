@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using corsairs.core.worldgen.topography;
 
 namespace corsairs.core.worldgen
 {
@@ -13,6 +14,60 @@ namespace corsairs.core.worldgen
         private const int Generations = 6;
         public const int MaxHeight = 255;
         public const int MaxDrainage = 100;
+
+        public static WorldMap GenerateMap()
+        {
+            ArrayMap<bool> water;
+            ArrayMap<Location> locations;
+            IEnumerable<Ocean> oceans;
+
+            // re-construct world until we're happy
+            do
+            {
+                var height = CreateHeightMap();
+                var drainage = CreateDrainageMap();
+
+                // create water table
+                water = height.Translate(x => x < 75);
+                var mountainMask = height.Translate(x => x > 130);
+                var erosionMap = new ArrayMap<int>(water.Size);
+
+                // erode landscape
+                RainErosionAlgorithm.PerformErosion(height, erosionMap, water, seed, 15000, mountainMask);
+
+                // group water together then erode
+                WaterCellularAutomaton.Apply(water, 4, 5);
+                WaterErosionAlgorithm.Apply(height, water, 30);
+
+                // classify
+                var biomes = BiomeClassifier.CreateBiomes(height, drainage, water);
+                DetectBeaches(biomes, water);
+
+                locations = AssembleLocations(water, height, drainage, erosionMap, biomes);
+            }
+            while (!IsPlayable(water));
+
+            // post-generation activities
+            oceans = OceanNamer.NameOceans(water);
+
+            return new WorldMap(locations, oceans);
+        }
+
+        private static ArrayMap<Location> AssembleLocations(ArrayMap<bool> water, ArrayMap<int> height, ArrayMap<int> drainage, ArrayMap<int> erosionMap, ArrayMap<Biome> biomes)
+        {
+            var ret = new ArrayMap<Location>(biomes.Size);
+            // now construct locations
+            for (var h = 0; h < biomes.Size; h++)
+            {
+                for (var w = 0; w < biomes.Size; w++)
+                {
+                    ret[h, w] = new Location(w, h, biomes[h, w], height[h, w], erosionMap[h, w], water[h, w], drainage[h, w], biomes[h, w].SuitableForPOI);
+                }
+            }
+            return ret;
+        }
+
+     
 
         private static ArrayMap<int> CreateHeightMap()
         {
@@ -61,43 +116,6 @@ namespace corsairs.core.worldgen
             var isWater = water.CopyData();
             var countOfWater = (double)isWater.Count(x => x);
             return countOfWater / water.Count > 0.4;
-        }
-
-        public static ArrayMap<Location> GenerateMap()
-        {
-            ArrayMap<bool> water;
-            ArrayMap<Location> ret;
-
-            do
-            {
-                var height = CreateHeightMap();
-                var drainage = CreateDrainageMap();
-
-                // create water table
-                water = height.Translate(x => x < 75);
-                var mountainMask = height.Translate(x => x > 130);
-                var erosionMap = new ArrayMap<int>(water.Size);
-
-                RainErosionAlgorithm.PerformErosion(height, erosionMap, water, seed, 15000, mountainMask);
-                WaterCellularAutomaton.Apply(water, 4, 5);
-                WaterErosionAlgorithm.Apply(height, water, 30);
-
-                var biomes = BiomeClassifier.CreateBiomes(height, drainage, water);
-                DetectBeaches(biomes, water);
-
-                ret = new ArrayMap<Location>(biomes.Size);
-                // now construct locations
-                for (var h = 0; h < biomes.Size; h++)
-                {
-                    for (var w = 0; w < biomes.Size; w++)
-                    {
-                        ret[h, w] = new Location(w, h, biomes[h, w], height[h, w], erosionMap[h, w], water[h, w], drainage[h, w], biomes[h, w].SuitableForPOI);
-                    }
-                }
-            }
-            while (!IsPlayable(water));
-
-            return ret;
         }
 
         private static Beach beach = new Beach();

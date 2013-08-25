@@ -27,6 +27,22 @@ namespace corsairs.core.worldgen.biomes
         }
 
         public abstract char DebugSymbol { get; }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as Biome;
+            if (other == null)
+            {
+                return false;
+            }
+
+            return DebugSymbol.Equals(other.DebugSymbol);
+        }
+
+        public override int GetHashCode()
+        {
+            return DebugSymbol.GetHashCode();
+        }
     }
 
     public abstract class Water : Biome

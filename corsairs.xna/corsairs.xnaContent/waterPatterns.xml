@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+  <!-- 
+  0: Water Name
+  1: Adjective
+  2: Noun
+  3: Plural
+  -->
+  <Asset Type="System.String[]">
+    <Item>{0} of {3}</Item>
+    <Item>{2} {0}</Item>
+    <Item>{1} {0}</Item>
+    <Item>{1} {2} {0}</Item>
+    <Item>{1} {2} {0} of {3}</Item>
+    <Item>{0} of {3}</Item>
+    <Item>{2} {0}</Item>
+    <Item>{1} {0}</Item>
+    <Item>{1} {2} {0}</Item>
+    <Item>{0} of {3}</Item>
+    <Item>{2} {0}</Item>
+    <Item>{1} {0}</Item>
+  </Asset>
+</XnaContent>

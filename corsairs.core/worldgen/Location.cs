@@ -38,5 +38,21 @@ namespace corsairs.core.worldgen
             this.erosion = erosion;
             this.suitableForPOI = suitableForPOI;
         }
+
+        public override bool Equals(object obj)
+        {
+            if(obj == null || !GetType().IsAssignableFrom(obj.GetType()))
+            {
+                return false;
+            }
+            var other = (Location)obj;
+
+            return other.X == X && other.Y == Y;
+        }
+
+        public override int GetHashCode()
+        {
+            return X.GetHashCode() ^ Y.GetHashCode();
+        }
     }
 }

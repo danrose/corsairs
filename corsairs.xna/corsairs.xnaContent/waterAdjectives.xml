@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+  <!-- TODO: replace this Asset with your own XML asset data. -->
+  <Asset Type="System.String[]">
+    <Item>Stormy</Item>
+    <Item>Bloody</Item>
+    <Item>Dark</Item>
+    <Item>Briny</Item>
+    <Item>Cold</Item>
+    <Item>Salty</Item>
+    <Item>Grim</Item>
+    <Item>Salty</Item>
+    <Item>Deep</Item>
+    <Item>Shallow</Item>
+    <Item>Festering</Item>
+    <Item>Murky</Item>
+  </Asset>
+</XnaContent>

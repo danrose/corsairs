@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+  <!-- TODO: replace this Asset with your own XML asset data. -->
+  <Asset Type="System.String[]">
+    <Item>Cove</Item>
+    <Item>Ocean</Item>
+    <Item>Ocean</Item>
+    <Item>Ocean</Item>
+    <Item>Sea</Item>
+    <Item>Sea</Item>
+    <Item>Sea</Item>
+    <Item>Sea</Item>
+    <Item>Depths</Item>
+    <Item>Swells</Item>
+    <Item>Expanse</Item>
+  </Asset>
+</XnaContent>

@@ -187,6 +187,38 @@ namespace corsairs.core.worldgen
             return ret;
         }
 
+        public List<int[]> Surroundings4(int heightCoord, int widthCoord)
+        {
+            var ret = new List<int[]>();
+
+            var atTop = heightCoord == 0;
+            var atRight = widthCoord == size - 1;
+            var atLeft = widthCoord == 0;
+            var atBottom = heightCoord == size - 1;
+
+            if (!atTop)
+            {
+                ret.Add(new[] { heightCoord - 1, widthCoord });
+            }
+
+            if (!atBottom)
+            {
+                ret.Add(new[] { heightCoord + 1, widthCoord });
+            }
+
+            if (!atLeft)
+            {
+                ret.Add(new[] { heightCoord, widthCoord - 1 });
+            }
+
+            if (!atRight)
+            {
+                ret.Add(new[] { heightCoord, widthCoord + 1 });
+            }
+
+            return ret;
+        }
+
         public ArrayMap<TNew> Translate<TNew>(Func<T, TNew> mapFunction)
         {
             var ret = new ArrayMap<TNew>(size);

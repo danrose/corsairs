@@ -32,7 +32,7 @@ namespace corsairs.console
             else
             {
                 Console.WriteLine("Writing new world to " + saveFile);
-                locations = Generator.GenerateMap();
+                locations = Generator.GenerateMap().Locations;
                 using (var writer = saveFileInfo.CreateText())
                 {
                     var serialized = FileEncoder.Encode(locations);

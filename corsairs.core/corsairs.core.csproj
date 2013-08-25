@@ -66,8 +66,11 @@
     <Compile Include="worldgen\Generator.cs" />
     <Compile Include="worldgen\Location.cs" />
     <Compile Include="worldgen\RainErosionAlgorithm.cs" />
+    <Compile Include="worldgen\topography\Ocean.cs" />
+    <Compile Include="worldgen\topography\OceanNamer.cs" />
     <Compile Include="worldgen\WaterCellularAutomaton.cs" />
     <Compile Include="worldgen\WaterErosionAlgorithm.cs" />
+    <Compile Include="worldgen\WorldMap.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
