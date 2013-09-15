@@ -18,6 +18,8 @@ namespace corsairs.xna.scenes
         private byte[] spritePriming = new byte[16];
         private Texture2D tileset;
         private WorldMap worldMap;
+        private const int SquareSize = 8;
+        private SpriteFont textFont;
 
         private Dictionary<char, Color> colourMap = new Dictionary<char, Color>
         {
@@ -74,6 +76,8 @@ namespace corsairs.xna.scenes
              }
          }*/
 
+            textFont = content.Load<SpriteFont>("MapFont");
+
             sw.Stop();
             Console.WriteLine("Took " + sw.ElapsedMilliseconds + " ms.");
          
@@ -115,8 +119,26 @@ namespace corsairs.xna.scenes
                     //spriteBatch.Draw(texture, new Rectangle(x * 8, y * 8, 8, 8), new Color(location.IsWater ? 128 : 0, location.IsWater ? 128 : 0, location.IsWater ? 128 : 0));
                     //spriteBatch.Draw(texture, new Rectangle(x * 8, y * 8, 8, 8), new Color(location.Drainage, location.Drainage,location.Drainage));
                     //spriteBatch.Draw(texture, new Rectangle(x * 8, y * 8, 8, 8), new Color(location.Height, location.Height,location.Height));
-                    spriteBatch.Draw(tileset, new Rectangle(x * 8, y * 8, 8, 8), new Rectangle((int)location.Biome.DebugSymbol * 8, spriteIndex * 8, 8, 8), Color.White);
+                    
+                    spriteBatch.Draw(tileset, 
+                        new Rectangle(x * SquareSize, y * SquareSize, SquareSize, SquareSize), 
+                        new Rectangle((int)location.Biome.DebugSymbol * SquareSize, spriteIndex * SquareSize, SquareSize, SquareSize),
+                        Color.White);
                 }
+            }
+
+            var maxDimension = locations.Size * SquareSize;
+            foreach (var ocean in worldMap.Oceans)
+            {
+                var size = textFont.MeasureString(ocean.Name);
+                var positionH = maxDimension - ((ocean.CenterH * SquareSize) - (size.Y / 2));
+                var positionW = (ocean.CenterW * SquareSize) - (size.X / 2);
+                spriteBatch.DrawString(textFont, ocean.Name, 
+                    new Vector2(positionW > 0 ? positionW + 2 : 2, positionH > 0 ? positionH + 2 : 2), 
+                    Color.Black);
+                spriteBatch.DrawString(textFont, ocean.Name,
+                    new Vector2(positionW > 0 ? positionW : 0, positionH > 0 ? positionH + 1 : 1),
+                    Color.White);
             }
         }
     }

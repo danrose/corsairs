@@ -42,9 +42,10 @@ namespace corsairs.core.worldgen.topography
 
             var seen = new bool[water.Size,water.Size];
             var ret = new List<Ocean>();
-            for (var h = 1; h < water.Size - 1; h++)
+#if(NAME_OCEANS)
+            for (var h = 0; h < water.Size - 1; h++)
             {
-                for (var w = 1; w < water.Size - 1; w++)
+                for (var w = 0; w < water.Size - 1; w++)
                 {
                     var square = water[h, w];
                     if (square == false || seen[h, w])
@@ -73,7 +74,7 @@ namespace corsairs.core.worldgen.topography
                             continue;
                         }
 
-                        foreach (var recursion in Flood(item[1], item[0], water, seen, ref minH, ref maxH, ref minW, ref maxW, ref currentSize))
+                        foreach (var recursion in Flood(item[0], item[1], water, seen, ref minH, ref maxH, ref minW, ref maxW, ref currentSize))
                         {
                             queue.Enqueue(new [] { recursion[0], recursion[1] });
                         }
@@ -94,11 +95,11 @@ namespace corsairs.core.worldgen.topography
                 }
             }
             sw.Stop();
-
+#endif
             return ret;
         }
 
-        private static IEnumerable<int[]> Flood(int w, int h, ArrayMap<bool> water, bool[,] seen, ref int minH, ref int maxH,
+        private static IEnumerable<int[]> Flood(int h, int w, ArrayMap<bool> water, bool[,] seen, ref int minH, ref int maxH,
                                   ref int minW, ref int maxW, ref int count)
         {
             seen[h, w] = true;
