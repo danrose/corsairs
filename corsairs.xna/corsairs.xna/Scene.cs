@@ -12,15 +12,16 @@ namespace corsairs.xna
     /// <summary>
     /// Represents a top-level mode of the game
     /// </summary>
-    public interface IScene
+    public abstract class Scene : DrawableGameComponent
     {
-        string Name { get; }
-        void Update(GameTime gameTime, KeyboardState keyboard);
-        void Draw(GameTime gameTime, SpriteBatch spriteBatch);
-        void Initialise(Game game);
-        void LoadContent(ContentManager content);
+        protected Scene(Game game) : base(game)
+        {
+        }
 
-        void OnShow();
-        void OnHide();
+        public abstract string Name { get; }
+
+        public virtual void OnActivated()
+        {
+        }
     }
 }

@@ -9,9 +9,10 @@ using Microsoft.Xna.Framework.Input;
 
 namespace corsairs.xna.scenes
 {
-    public class MainMenuScene : IScene
+    public class MainMenuScene : Scene
     {
         private SpriteFont textFont;
+        private SpriteBatch spriteBatch;
         private List<string> options;
         private int maxTextWidth;
         private int maxTextHeight;
@@ -19,20 +20,27 @@ namespace corsairs.xna.scenes
         private int currentlySelected;
         private TimeSpan lastRespondedToDown;
         private TimeSpan lastRespondedToUp;
-        private Game gameRef;
 
         private const int hPadding = 60;
         private const int vPadding = 2;
         private const int spacing = 5;
         private const int keyboardThrottle = 200;
 
-        public string Name
+
+        public MainMenuScene(Game game)
+            : base(game)
+        {
+        }
+
+        public override string Name
         {
             get { return SceneNames.MainMenu; }
         }
 
-        public void Update(GameTime gameTime, KeyboardState keyboard)
+        public override void Update(GameTime gameTime)
         {
+            base.Update(gameTime);
+            var keyboard = Keyboard.GetState();
             if (keyboard.IsKeyDown(Keys.Down))
             {
                 if (gameTime.TotalGameTime - lastRespondedToDown > TimeSpan.FromMilliseconds(keyboardThrottle))
@@ -54,7 +62,7 @@ namespace corsairs.xna.scenes
                 var command = options[currentlySelected];
                 if (command == "Quit")
                 {
-                    gameRef.Exit();
+                    Game.Exit();
                     return;
                 }
                 if (command == "Start New Game")
@@ -82,7 +90,7 @@ namespace corsairs.xna.scenes
             }
         }
 
-        private void DrawAppName(SpriteBatch spriteBatch)
+        private void DrawAppName()
         {
             var midWidth = spriteBatch.GraphicsDevice.Viewport.Width / 2;
             var text = "Welcome to Corsairs - choose an option";
@@ -95,20 +103,23 @@ namespace corsairs.xna.scenes
                     Color.White);
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        public override void Draw(GameTime gameTime)
         {
+            spriteBatch.Begin();
+
+            base.Draw(gameTime);
             if (menuBackground == null)
             {
-                menuBackground = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+                menuBackground = new Texture2D(Game.GraphicsDevice, 1, 1);
                 menuBackground.SetData(new[] { Color.White });
             }
 
-            spriteBatch.GraphicsDevice.Clear(Color.Navy);
+            Game.GraphicsDevice.Clear(Color.Navy);
 
-            DrawAppName(spriteBatch);
+            DrawAppName();
 
-            var midWidth = spriteBatch.GraphicsDevice.Viewport.Width / 2;
-            var midHeight = spriteBatch.GraphicsDevice.Viewport.Height / 2;
+            var midWidth = Game.GraphicsDevice.Viewport.Width / 2;
+            var midHeight = Game.GraphicsDevice.Viewport.Height / 2;
             var textStartPos = midWidth - (maxTextWidth / 2);
             var optionCount = options.Count;
             var elementHeight = spacing + maxTextHeight + vPadding * 2;
@@ -129,11 +140,16 @@ namespace corsairs.xna.scenes
                         centerAligningOffset + vPadding + i * elementHeight),
                     Color.NavajoWhite);
             }
+
+            spriteBatch.End();
         }
 
-        public void Initialise(Game game)
+        public override void Initialize()
         {
-            gameRef = game;
+            base.Initialize();
+
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+
             options = new List<string>();
             options.Add("Start New Game");
             options.Add("Quit");
@@ -155,19 +171,10 @@ namespace corsairs.xna.scenes
             currentlySelected = 0;
         }
 
-        public void LoadContent(ContentManager content)
+        protected override void LoadContent()
         {
-            textFont = content.Load<SpriteFont>("MenuFont"); 
-        }
-
-        public void OnShow()
-        {
-
-        }
-
-        public void OnHide()
-        {
-
+            base.LoadContent();
+            textFont = Game.Content.Load<SpriteFont>("MenuFont"); 
         }
     }
 }

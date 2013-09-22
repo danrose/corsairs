@@ -43,11 +43,11 @@ namespace corsairs.xna
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            SceneManager.RegisterScenes(new MainMenuScene(), new WorldMapScene());
+            SceneManager.RegisterScenes(new MainMenuScene(this), new WorldMapScene(this));
 
             base.Initialize();
 
-            SceneManager.Initialise(this);
+            SceneManager.Init();
         }
 
         /// <summary>
@@ -57,8 +57,7 @@ namespace corsairs.xna
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            SceneManager.LoadContent(Content);           
+            spriteBatch = new SpriteBatch(GraphicsDevice);          
         }
 
         /// <summary>
@@ -81,9 +80,6 @@ namespace corsairs.xna
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // TODO: Add your update logic here
-            SceneManager.Update(gameTime, Keyboard.GetState());
-
             base.Update(gameTime);
         }
 
@@ -93,12 +89,6 @@ namespace corsairs.xna
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            spriteBatch.Begin();
-            SceneManager.Draw(gameTime, spriteBatch);
-            spriteBatch.End();
-
             // TODO: Add your drawing code here
             base.Draw(gameTime);
         }

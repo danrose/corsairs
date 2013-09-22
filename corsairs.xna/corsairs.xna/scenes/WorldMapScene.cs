@@ -13,7 +13,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace corsairs.xna.scenes
 {
-    public class WorldMapScene : IScene
+    public class WorldMapScene : Scene
     {
         private Random seed = new Random();
         private byte[] spritePriming = new byte[16];
@@ -21,6 +21,12 @@ namespace corsairs.xna.scenes
         private WorldMap worldMap;
         private const int SquareSize = 8;
         private SpriteFont textFont;
+        private SpriteBatch spriteBatch;
+
+        public WorldMapScene(Game game)
+            : base(game)
+        {
+        }
 
         private Dictionary<char, Color> colourMap = new Dictionary<char, Color>
         {
@@ -41,14 +47,23 @@ namespace corsairs.xna.scenes
             {'t', Color.GhostWhite}
         };
 
-        public string Name
+        public override string Name
         {
             get { return SceneNames.Worldmap; }
         }
 
-        public void LoadContent(ContentManager content)
+        public override void OnActivated()
         {
-            tileset = content.Load<Texture2D>("tileset");
+            base.OnActivated();
+
+            worldMap = Generator.GenerateMap();
+        }
+
+        protected override void LoadContent()
+        {
+            base.LoadContent();
+
+            tileset = Game.Content.Load<Texture2D>("tileset");
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -67,8 +82,7 @@ namespace corsairs.xna.scenes
              else
              {*/
             Console.WriteLine("Writing new world to " + saveFile);
-            LoadOceanNaming(content);
-            worldMap = Generator.GenerateMap();
+            LoadOceanNaming(Game.Content);
             /* using (var writer = saveFileInfo.CreateText())
              {
                  var serialized = FileEncoder.Encode(locations);
@@ -77,7 +91,7 @@ namespace corsairs.xna.scenes
              }
          }*/
 
-            textFont = content.Load<SpriteFont>("MapFont");
+            textFont = Game.Content.Load<SpriteFont>("MapFont");
 
             sw.Stop();
             Console.WriteLine("Took " + sw.ElapsedMilliseconds + " ms.");
@@ -95,8 +109,12 @@ namespace corsairs.xna.scenes
             OceanNamer.Initialise(waterAdjectives, waterNames, waterNouns, waterPatterns, waterPlurals);
         }
 
-        public void Update(GameTime gameTime, KeyboardState keyboard)
+        public override void Update(GameTime gameTime)
         {
+            base.Update(gameTime);
+
+            var keyboard = Keyboard.GetState();
+
             if (keyboard.IsKeyDown(Keys.Escape))
             { 
                 SceneManager.ChangeScene(SceneNames.MainMenu);
@@ -104,19 +122,17 @@ namespace corsairs.xna.scenes
             }
         }
 
-        public void Initialise(Game game)
+        public override void Initialize()
         {
+            base.Initialize();
+
+            spriteBatch = new SpriteBatch(GraphicsDevice);
             seed.NextBytes(spritePriming);
         }
 
-        public void OnShow() { }
-        public void OnHide() 
+        public override void Draw(GameTime gameTime)
         {
-            worldMap = Generator.GenerateMap();
-        }
-
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {
+            spriteBatch.Begin();
             var waterFrameOffset = (gameTime.TotalGameTime.Milliseconds / 300) % 3;
             var locations = worldMap.Locations;
 
@@ -151,6 +167,8 @@ namespace corsairs.xna.scenes
                     new Vector2(positionW > 0 ? positionW : 0, positionH > 0 ? positionH + 1 : 1),
                     Color.White);
             }
+
+            spriteBatch.End();
         }
     }
 }

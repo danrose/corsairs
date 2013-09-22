@@ -11,52 +11,35 @@ namespace corsairs.xna
 {
     public static class SceneManager
     {
-        private static List<IScene> scenes = new List<IScene>();
-        private static IScene currentScene;
+        private static List<Scene> scenes = new List<Scene>();
+        private static Scene currentScene;
 
-        public static void RegisterScenes(params IScene[] toRegister)
+        public static void RegisterScenes(params Scene[] toRegister)
         {
+            foreach (var scene in toRegister)
+            {
+                scene.Visible = false;
+                scene.Game.Components.Add(scene);
+            }
+
             scenes.AddRange(toRegister);
         }
 
-        public static void Initialise(Game game)
-        {
-            foreach (var scene in scenes)
-            {
-                scene.Initialise(game);
-            }
-        }
-
-        public static void LoadContent(ContentManager content)
-        {
-            foreach (var scene in scenes)
-            {
-                scene.LoadContent(content);
-            }
-
-            currentScene = scenes[0];
-        }
-
-        public static void Update(GameTime gameTime, KeyboardState keyboard)
-        {
-            currentScene.Update(gameTime, keyboard);
-        }
-
-        public static void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {
-            currentScene.Draw(gameTime, spriteBatch);
-        }
-
-        private static IScene GetSceneByName(string sceneName)
+        private static Scene GetSceneByName(string sceneName)
         {
             return scenes.FirstOrDefault(x => x.Name == sceneName);
+        }
+
+        public static void Init()
+        {
+            ChangeScene(scenes[0].Name);
         }
 
         public static void ChangeScene(string sceneName)
         {
             if (currentScene != null)
             {
-                currentScene.OnHide();
+                currentScene.Visible = false;
             }
 
             var scene = GetSceneByName(sceneName);
@@ -66,7 +49,8 @@ namespace corsairs.xna
             }
 
             currentScene = scene;
-            scene.OnShow();
+            scene.OnActivated();
+            scene.Visible = true;
         }
     }
 }
