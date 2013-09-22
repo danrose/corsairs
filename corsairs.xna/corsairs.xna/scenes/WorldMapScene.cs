@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Content;
 using System.Diagnostics;
 using System.IO;
 using corsairs.core.worldgen.topography;
+using Microsoft.Xna.Framework.Input;
 
 namespace corsairs.xna.scenes
 {
@@ -94,14 +95,24 @@ namespace corsairs.xna.scenes
             OceanNamer.Initialise(waterAdjectives, waterNames, waterNouns, waterPatterns, waterPlurals);
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, KeyboardState keyboard)
         {
-
+            if (keyboard.IsKeyDown(Keys.Escape))
+            { 
+                SceneManager.ChangeScene(SceneNames.MainMenu);
+                return;
+            }
         }
 
-        public void Initialise()
+        public void Initialise(Game game)
         {
             seed.NextBytes(spritePriming);
+        }
+
+        public void OnShow() { }
+        public void OnHide() 
+        {
+            worldMap = Generator.GenerateMap();
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)

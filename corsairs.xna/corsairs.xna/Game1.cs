@@ -22,8 +22,6 @@ namespace corsairs.xna
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        List<IScene> scenes = new List<IScene>();
-        IScene currentScene;
         
         public Game1()
         {
@@ -45,14 +43,11 @@ namespace corsairs.xna
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            scenes.Add(new WorldMapScene());
+            SceneManager.RegisterScenes(new MainMenuScene(), new WorldMapScene());
 
             base.Initialize();
 
-            foreach (var scene in scenes)
-            {
-                scene.Initialise();
-            }
+            SceneManager.Initialise(this);
         }
 
         /// <summary>
@@ -63,13 +58,7 @@ namespace corsairs.xna
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            foreach (var scene in scenes)
-            {
-                scene.LoadContent(Content);
-            }
-
-            currentScene = scenes[0];
+            SceneManager.LoadContent(Content);           
         }
 
         /// <summary>
@@ -93,7 +82,7 @@ namespace corsairs.xna
                 this.Exit();
 
             // TODO: Add your update logic here
-            currentScene.Update(gameTime);
+            SceneManager.Update(gameTime, Keyboard.GetState());
 
             base.Update(gameTime);
         }
@@ -107,7 +96,7 @@ namespace corsairs.xna
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
-            currentScene.Draw(gameTime, spriteBatch);
+            SceneManager.Draw(gameTime, spriteBatch);
             spriteBatch.End();
 
             // TODO: Add your drawing code here

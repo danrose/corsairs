@@ -8,5 +8,6 @@ namespace corsairs.xna.scenes
     public static class SceneNames
     {
         public const string Worldmap = "worldmap";
+        public const string MainMenu = "mainmenu";
     }
 }
