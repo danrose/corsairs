@@ -18,7 +18,7 @@ namespace corsairs.xna
         {
             foreach (var scene in toRegister)
             {
-                scene.Visible = false;
+                scene.Visible = scene.Enabled = false;
                 scene.Game.Components.Add(scene);
             }
 
@@ -39,7 +39,7 @@ namespace corsairs.xna
         {
             if (currentScene != null)
             {
-                currentScene.Visible = false;
+                currentScene.Visible = currentScene.Enabled = false;
             }
 
             var scene = GetSceneByName(sceneName);
@@ -50,7 +50,7 @@ namespace corsairs.xna
 
             currentScene = scene;
             scene.OnActivated();
-            scene.Visible = true;
+            scene.Visible = scene.Enabled = true;
         }
     }
 }

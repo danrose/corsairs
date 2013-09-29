@@ -10,42 +10,25 @@ using System.Diagnostics;
 using System.IO;
 using corsairs.core.worldgen.topography;
 using Microsoft.Xna.Framework.Input;
+using corsairs.game.worldgen;
+using corsairs.game;
 
 namespace corsairs.xna.scenes
 {
     public class WorldMapScene : Scene
     {
-        private Random seed = new Random();
-        private byte[] spritePriming = new byte[16];
-        private Texture2D tileset;
-        private WorldMap worldMap;
-        private const int SquareSize = 8;
-        private SpriteFont textFont;
-        private SpriteBatch spriteBatch;
+        protected Random seed = new Random();
+        protected byte[] spritePriming = new byte[16];
+        protected Texture2D tileset;
+        protected WorldMap worldMap;
+        protected const int SquareSize = 8;
+        protected SpriteFont textFont;
+        protected SpriteBatch spriteBatch;
 
         public WorldMapScene(Game game)
             : base(game)
         {
         }
-
-        private Dictionary<char, Color> colourMap = new Dictionary<char, Color>
-        {
-            {'b', Color.Cornsilk},
-            {'#', Color.DarkBlue},
-            {'~', Color.Navy},
-            {'.', Color.Blue},
-            {'g', Color.LightGreen},
-            {'h', Color.Red},
-            {'m', Color.DarkSeaGreen},
-            {'M', Color.White},
-            {'f', Color.DarkGreen},
-            {'i', Color.White},
-            {'G', Color.Green},
-            {'p', Color.LightGoldenrodYellow},
-            {'r', Color.Gray},
-            {'s', Color.Brown},
-            {'t', Color.GhostWhite}
-        };
 
         public override string Name
         {
@@ -56,7 +39,31 @@ namespace corsairs.xna.scenes
         {
             base.OnActivated();
 
-            worldMap = Generator.GenerateMap();
+            var saveFile = GameState.GetSaveFile();
+            var saveFileInfo = new FileInfo(saveFile);
+            if (GameState.LoadExistingGame && saveFileInfo.Exists)
+            {
+                Console.WriteLine("Reading saved world from " + saveFile);
+                using (var reader = saveFileInfo.OpenText())
+                {
+                    worldMap = FileEncoder.Decode(reader);
+                    reader.Close();
+                }
+            }
+            else
+            {
+                worldMap = Generator.GenerateMap();
+                if (saveFileInfo.Exists)
+                {
+                    saveFileInfo.Delete();
+                }
+                using (var writer = saveFileInfo.CreateText())
+                {
+                    var serialized = FileEncoder.Encode(worldMap);
+                    writer.Write(serialized);
+                    writer.Close();
+                }
+            }
         }
 
         protected override void LoadContent()
@@ -68,28 +75,7 @@ namespace corsairs.xna.scenes
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            var saveFile = Path.Combine(Directory.GetCurrentDirectory(), "save.foo");
-            /* var saveFileInfo = new FileInfo(saveFile);
-             if (saveFileInfo.Exists)
-             {
-                 Console.WriteLine("Reading saved world from " + saveFile);
-                 using (var reader = saveFileInfo.OpenText())
-                 {
-                     locations = FileEncoder.Decode(reader);
-                     reader.Close();
-                 }
-             }
-             else
-             {*/
-            Console.WriteLine("Writing new world to " + saveFile);
             LoadOceanNaming(Game.Content);
-            /* using (var writer = saveFileInfo.CreateText())
-             {
-                 var serialized = FileEncoder.Encode(locations);
-                 writer.Write(serialized);
-                 writer.Close();
-             }
-         }*/
 
             textFont = Game.Content.Load<SpriteFont>("MapFont");
 

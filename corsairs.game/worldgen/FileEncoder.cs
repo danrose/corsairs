@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using corsairs.core.worldgen.topography;
 
 namespace corsairs.game.worldgen
 {
@@ -14,8 +15,9 @@ namespace corsairs.game.worldgen
         private static int headerLength = header.Length;
         private const int recordLength = 1 + 3 + 3 + 3 + 1 + 1;
 
-        public static string Encode(ArrayMap<Location> locations)
+        public static string Encode(WorldMap map)
         {
+            var locations = map.Locations;
             // header, size of world map
             var ret = new StringBuilder(header + locations.Size.ToString().PadLeft(4));
 
@@ -38,7 +40,7 @@ namespace corsairs.game.worldgen
             return ret.ToString();
         }
 
-        public static ArrayMap<Location> Decode(StreamReader reader)
+        public static WorldMap Decode(StreamReader reader)
         {
             // Read the header and dimensions, throwing if invalid
             var headerBuf = new char[headerLength + 4];
@@ -72,7 +74,7 @@ namespace corsairs.game.worldgen
                 count++;
             }
 
-            return ret;
+            return new WorldMap(ret, new List<Ocean>());
         }
     }
 }

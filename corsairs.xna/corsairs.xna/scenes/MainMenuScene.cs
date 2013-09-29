@@ -6,42 +6,42 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
+using System.IO;
+using corsairs.game;
 
 namespace corsairs.xna.scenes
 {
-    public class MainMenuScene : Scene
+    public abstract class BaseMenuScene : Scene
     {
-        private SpriteFont textFont;
-        private SpriteBatch spriteBatch;
-        private List<string> options;
-        private int maxTextWidth;
-        private int maxTextHeight;
-        private Texture2D menuBackground;
-        private int currentlySelected;
-        private TimeSpan lastRespondedToDown;
-        private TimeSpan lastRespondedToUp;
+        protected SpriteFont textFont;
+        protected SpriteBatch spriteBatch;
+        protected List<string> options;
+        protected int maxTextWidth;
+        protected int maxTextHeight;
+        protected Texture2D menuBackground;
+        protected int currentlySelected;
+        protected TimeSpan lastRespondedToDown;
+        protected TimeSpan lastRespondedToUp;
 
-        private const int hPadding = 60;
-        private const int vPadding = 2;
-        private const int spacing = 5;
-        private const int keyboardThrottle = 200;
+        protected const int hPadding = 60;
+        protected const int vPadding = 2;
+        protected const int spacing = 5;
+        protected const int keyboardThrottle = 200;
 
 
-        public MainMenuScene(Game game)
+        protected BaseMenuScene(Game game)
             : base(game)
         {
         }
 
-        public override string Name
-        {
-            get { return SceneNames.MainMenu; }
-        }
+        public abstract string MenuTitle { get; }
+        public abstract void RegisterMenuItems();
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
             var keyboard = Keyboard.GetState();
-            if (keyboard.IsKeyDown(Keys.Down))
+            if (keyboard.IsKeyDown(Keys.Up))
             {
                 if (gameTime.TotalGameTime - lastRespondedToDown > TimeSpan.FromMilliseconds(keyboardThrottle))
                 {
@@ -49,7 +49,7 @@ namespace corsairs.xna.scenes
                     DecrementOption();
                }
             }
-            if (keyboard.IsKeyDown(Keys.Up))
+            if (keyboard.IsKeyDown(Keys.Down))
             {
                 if (gameTime.TotalGameTime - lastRespondedToUp > TimeSpan.FromMilliseconds(keyboardThrottle))
                 {
@@ -60,25 +60,18 @@ namespace corsairs.xna.scenes
             if (keyboard.IsKeyDown(Keys.Enter))
             {
                 var command = options[currentlySelected];
-                if (command == "Quit")
-                {
-                    Game.Exit();
-                    return;
-                }
-                if (command == "Start New Game")
-                {
-                    SceneManager.ChangeScene(SceneNames.Worldmap);
-                    return;
-                }
+                ExecuteAction(command);
             }
         }
 
-        private void IncrementOption()
+        protected abstract void ExecuteAction(string action);
+
+        protected void IncrementOption()
         {
             currentlySelected = (currentlySelected + 1) % options.Count;
         }
 
-        private void DecrementOption()
+        protected void DecrementOption()
         {
             if (currentlySelected == 0)
             {
@@ -90,10 +83,10 @@ namespace corsairs.xna.scenes
             }
         }
 
-        private void DrawAppName()
+        protected void DrawAppName()
         {
             var midWidth = spriteBatch.GraphicsDevice.Viewport.Width / 2;
-            var text = "Welcome to Corsairs - choose an option";
+            var text = MenuTitle;
             var textWidth = textFont.MeasureString(text).X;
 
             spriteBatch.DrawString(textFont, text,
@@ -151,8 +144,7 @@ namespace corsairs.xna.scenes
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             options = new List<string>();
-            options.Add("Start New Game");
-            options.Add("Quit");
+            RegisterMenuItems();
 
             foreach (var option in options)
             {
@@ -175,6 +167,55 @@ namespace corsairs.xna.scenes
         {
             base.LoadContent();
             textFont = Game.Content.Load<SpriteFont>("MenuFont"); 
+        }
+    }
+
+    public class MainMenuScene : BaseMenuScene
+    {
+        public MainMenuScene(Game game)
+            : base(game)
+        {
+        }
+
+        public override string Name
+        {
+            get { return SceneNames.MainMenu; }
+        }
+
+        public override string MenuTitle
+        {
+            get { return "Welcome to Corsairs - choose an option"; }
+        }
+
+        public override void RegisterMenuItems()
+        {
+            options.Add("Start New Game");
+            if (File.Exists(GameState.GetSaveFile()))
+            {
+                options.Add("Load Game");
+            }
+            options.Add("Quit");
+        }
+
+        protected override void ExecuteAction(string action)
+        {
+            if (action == "Quit")
+            {
+                Game.Exit();
+                return;
+            }
+            if (action == "Start New Game")
+            {
+                GameState.LoadExistingGame = false;
+                SceneManager.ChangeScene(SceneNames.Worldmap);
+                return;
+            }
+            if (action == "Load Game")
+            {
+                GameState.LoadExistingGame = true;
+                SceneManager.ChangeScene(SceneNames.Worldmap);
+                return;
+            }
         }
     }
 }

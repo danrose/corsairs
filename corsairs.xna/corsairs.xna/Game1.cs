@@ -27,8 +27,6 @@ namespace corsairs.xna
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.IsFullScreen = false;
-            //graphics.PreferredBackBufferHeight = 1024;
-            //graphics.PreferredBackBufferWidth = 1024;
             graphics.PreferredBackBufferHeight = 512;
             graphics.PreferredBackBufferWidth = 512;
             Content.RootDirectory = "Content";
@@ -43,7 +41,9 @@ namespace corsairs.xna
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            SceneManager.RegisterScenes(new MainMenuScene(this), new WorldMapScene(this));
+            SceneManager.RegisterScenes(
+                new MainMenuScene(this), 
+                new WorldMapScene(this));
 
             base.Initialize();
 
