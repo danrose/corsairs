@@ -29,6 +29,7 @@ namespace corsairs.xna
             graphics.IsFullScreen = false;
             graphics.PreferredBackBufferHeight = 512;
             graphics.PreferredBackBufferWidth = 512;
+            IsMouseVisible = true;
             Content.RootDirectory = "Content";
         }
 

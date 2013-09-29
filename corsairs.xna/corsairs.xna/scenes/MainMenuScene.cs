@@ -15,7 +15,7 @@ namespace corsairs.xna.scenes
     {
         protected SpriteFont textFont;
         protected SpriteBatch spriteBatch;
-        protected List<string> options;
+        protected List<MenuOption> options;
         protected int maxTextWidth;
         protected int maxTextHeight;
         protected Texture2D menuBackground;
@@ -23,11 +23,23 @@ namespace corsairs.xna.scenes
         protected TimeSpan lastRespondedToDown;
         protected TimeSpan lastRespondedToUp;
 
+        protected int centerAligningOffset;
+        protected int elementHeight;
+        protected int textStartPos;
+
         protected const int hPadding = 60;
         protected const int vPadding = 2;
         protected const int spacing = 5;
         protected const int keyboardThrottle = 200;
 
+        protected void SetCurrentIndex(int index)
+        {
+            currentlySelected = index;
+            for (var i = 0; i < options.Count; i++)
+            {
+                options[i].Selected = i == index;
+            }
+        }
 
         protected BaseMenuScene(Game game)
             : base(game)
@@ -40,7 +52,10 @@ namespace corsairs.xna.scenes
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
+
             var keyboard = Keyboard.GetState();
+            var mouse = Mouse.GetState();
+
             if (keyboard.IsKeyDown(Keys.Up))
             {
                 if (gameTime.TotalGameTime - lastRespondedToDown > TimeSpan.FromMilliseconds(keyboardThrottle))
@@ -59,27 +74,58 @@ namespace corsairs.xna.scenes
             }
             if (keyboard.IsKeyDown(Keys.Enter))
             {
-                var command = options[currentlySelected];
-                ExecuteAction(command);
+                ExecuteAction(options[currentlySelected]);
+            }
+ 
+            for(var i = 0; i < options.Count; i++)
+            {
+                if (options[i].IsWithinBounds(mouse.X, mouse.Y))
+                {
+                    if (currentlySelected != i)
+                    {
+                        SetCurrentIndex(i);
+                    }
+                    if (mouse.LeftButton == ButtonState.Pressed)
+                    {
+                        ExecuteAction(options[currentlySelected]);
+                    }
+                    break;
+                }
             }
         }
 
-        protected abstract void ExecuteAction(string action);
+        public void AddMenuOption(string text, Action onExecute)
+        {
+            if (options == null)
+            {
+                options = new List<MenuOption>();
+            }
+            options.Add(new MenuOption(text, onExecute));
+        }
+
+        protected virtual void ExecuteAction(MenuOption action)
+        {
+            var matchedOption = options.FirstOrDefault(x => x.Text == action.Text);
+            if (matchedOption != null)
+            {
+                matchedOption.OnExecute();
+            }
+        }
 
         protected void IncrementOption()
         {
-            currentlySelected = (currentlySelected + 1) % options.Count;
+            SetCurrentIndex((currentlySelected + 1) % options.Count);
         }
 
         protected void DecrementOption()
         {
             if (currentlySelected == 0)
             {
-                currentlySelected = options.Count - 1;
+                SetCurrentIndex(currentlySelected = options.Count - 1);
             }
             else
             {
-                currentlySelected--;
+                SetCurrentIndex(currentlySelected - 1);
             }
         }
 
@@ -96,11 +142,31 @@ namespace corsairs.xna.scenes
                     Color.White);
         }
 
+        protected void RecalculateState()
+        {
+            var midWidth = Game.GraphicsDevice.Viewport.Width / 2;
+            var midHeight = Game.GraphicsDevice.Viewport.Height / 2;
+            textStartPos = midWidth - (maxTextWidth / 2);
+            elementHeight = spacing + maxTextHeight + vPadding * 2;
+            centerAligningOffset = midHeight - (options.Count * elementHeight / 2);
+            Console.WriteLine("recalc " + midHeight + " " + options.Count + " " + elementHeight);
+
+            for (var i = 0; i < options.Count; i++)
+            {
+                options[i].Bounds = new Rectangle(
+                    textStartPos - hPadding,
+                    centerAligningOffset + (i * elementHeight),
+                    maxTextWidth + hPadding * 2,
+                    maxTextHeight + vPadding * 2);
+            }
+        }
+
         public override void Draw(GameTime gameTime)
         {
             spriteBatch.Begin();
 
             base.Draw(gameTime);
+
             if (menuBackground == null)
             {
                 menuBackground = new Texture2D(Game.GraphicsDevice, 1, 1);
@@ -110,24 +176,14 @@ namespace corsairs.xna.scenes
             Game.GraphicsDevice.Clear(Color.Navy);
 
             DrawAppName();
-
-            var midWidth = Game.GraphicsDevice.Viewport.Width / 2;
-            var midHeight = Game.GraphicsDevice.Viewport.Height / 2;
-            var textStartPos = midWidth - (maxTextWidth / 2);
-            var optionCount = options.Count;
-            var elementHeight = spacing + maxTextHeight + vPadding * 2;
-            var centerAligningOffset = midHeight - (optionCount * elementHeight / 2);
-
-            for(var i = 0; i < optionCount; i++)
+                     
+            for(var i = 0; i < options.Count; i++)
             {
-                spriteBatch.Draw(menuBackground, new Rectangle(
-                    textStartPos - hPadding,
-                    centerAligningOffset + (i * elementHeight), 
-                    maxTextWidth + hPadding * 2,
-                    maxTextHeight + vPadding * 2), 
-                    i == currentlySelected ? Color.Red : Color.CornflowerBlue);
+                var currentOption = options[i];
+                spriteBatch.Draw(menuBackground, currentOption.Bounds,
+                    currentOption.Selected ? Color.Red : Color.CornflowerBlue);
 
-                spriteBatch.DrawString(textFont, options[i],
+                spriteBatch.DrawString(textFont, currentOption.Text,
                     new Vector2(
                         textStartPos,
                         centerAligningOffset + vPadding + i * elementHeight),
@@ -143,12 +199,12 @@ namespace corsairs.xna.scenes
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            options = new List<string>();
+            options = new List<MenuOption>();
             RegisterMenuItems();
 
             foreach (var option in options)
             {
-                var size = textFont.MeasureString(option);
+                var size = textFont.MeasureString(option.Text);
                 if (size.X > maxTextWidth)
                 {
                     maxTextWidth = (int)size.X;
@@ -160,13 +216,32 @@ namespace corsairs.xna.scenes
                 }
             }
 
-            currentlySelected = 0;
+            SetCurrentIndex(0);
+            RecalculateState();
         }
 
         protected override void LoadContent()
         {
             base.LoadContent();
             textFont = Game.Content.Load<SpriteFont>("MenuFont"); 
+        }
+
+        public class MenuOption
+        {
+            public MenuOption(string text, Action onExecute)
+            {
+                this.Text = text;
+                this.OnExecute = onExecute;
+            }
+
+            public string Text { get; set; }
+            public Rectangle Bounds { get; set; }
+            public bool Selected { get; set; }
+            public Action OnExecute { get; set; }
+            public bool IsWithinBounds(int x, int y)
+            {
+                return x >= Bounds.Left && x <= Bounds.Right && y >= Bounds.Top && y <= Bounds.Bottom;
+            }
         }
     }
 
@@ -189,33 +264,21 @@ namespace corsairs.xna.scenes
 
         public override void RegisterMenuItems()
         {
-            options.Add("Start New Game");
+            AddMenuOption("Start New Game", () =>
+                {
+                    GameState.LoadExistingGame = false;
+                    SceneManager.ChangeScene(SceneNames.Worldmap);
+                });
+
             if (File.Exists(GameState.GetSaveFile()))
             {
-                options.Add("Load Game");
+                AddMenuOption("Load Game", () =>
+                {
+                    GameState.LoadExistingGame = true;
+                    SceneManager.ChangeScene(SceneNames.Worldmap);
+                });
             }
-            options.Add("Quit");
-        }
-
-        protected override void ExecuteAction(string action)
-        {
-            if (action == "Quit")
-            {
-                Game.Exit();
-                return;
-            }
-            if (action == "Start New Game")
-            {
-                GameState.LoadExistingGame = false;
-                SceneManager.ChangeScene(SceneNames.Worldmap);
-                return;
-            }
-            if (action == "Load Game")
-            {
-                GameState.LoadExistingGame = true;
-                SceneManager.ChangeScene(SceneNames.Worldmap);
-                return;
-            }
+            AddMenuOption("Quit", () => Game.Exit());
         }
     }
 }
