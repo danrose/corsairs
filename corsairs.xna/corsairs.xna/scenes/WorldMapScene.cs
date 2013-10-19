@@ -25,6 +25,9 @@ namespace corsairs.xna.scenes
         protected SpriteFont textFont;
         protected SpriteBatch spriteBatch;
 
+        protected Point pos;
+        protected Point dest;
+
         public WorldMapScene(Game game)
             : base(game)
         {
@@ -64,6 +67,8 @@ namespace corsairs.xna.scenes
                     writer.Close();
                 }
             }
+
+            pos = new Point(128, 128);
         }
 
         protected override void LoadContent()
@@ -95,16 +100,47 @@ namespace corsairs.xna.scenes
             OceanNamer.Initialise(waterAdjectives, waterNames, waterNouns, waterPatterns, waterPlurals);
         }
 
+        private double Magnitude(int x, int y)
+        {
+            return Math.Sqrt((x * x) + (y * y));
+        }
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
 
             var keyboard = Keyboard.GetState();
+            var mouse = Mouse.GetState();
+
+            if (mouse.LeftButton == ButtonState.Pressed)
+            {
+                dest = new Point(mouse.X, mouse.Y);
+            }
 
             if (keyboard.IsKeyDown(Keys.Escape))
             { 
                 SceneManager.ChangeScene(SceneNames.MainMenu);
                 return;
+            }
+
+            if (dest != null && dest != pos)
+            {
+                // get direction
+                var dX = dest.X - pos.X;
+                var dY = dest.Y - pos.Y;
+                var scaledX = dX / 10;
+                var scaledY = dY / 10;
+
+                if (Magnitude(dX, dY) < 12)
+                {
+                    pos = dest;
+                }
+                else
+                {
+                    pos.X += scaledX == 0 ? 1 : scaledX;
+                    pos.Y += scaledY == 0 ? 1 : scaledY;
+                }
+                
             }
         }
 
@@ -139,6 +175,10 @@ namespace corsairs.xna.scenes
                         Color.White);
                 }
             }
+
+            spriteBatch.Draw(tileset, new Rectangle(pos.X, pos.Y, SquareSize, SquareSize),
+                new Rectangle(0, 0, SquareSize, SquareSize),
+                Color.White);
 
             var maxDimension = locations.Size * SquareSize;
             foreach (var ocean in worldMap.Oceans)
