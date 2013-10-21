@@ -81,6 +81,8 @@
     <Compile Include="scenes\MainMenuScene.cs" />
     <Compile Include="scenes\SceneNames.cs" />
     <Compile Include="scenes\WorldMapScene.cs" />
+    <Compile Include="scenes\worldmap\WMShip.cs" />
+    <Compile Include="Vectors.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
@@ -131,6 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="components\" />
+    <Folder Include="scenes\mainmenu\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
