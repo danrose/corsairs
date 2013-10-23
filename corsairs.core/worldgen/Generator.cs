@@ -11,7 +11,7 @@ namespace corsairs.core.worldgen
     public static class Generator
     {
         private static readonly Random seed = new Random();
-        private const int Generations = 6;
+        private const int Generations = 7;
         public const int MaxHeight = 255;
         public const int MaxDrainage = 100;
 
