@@ -123,7 +123,19 @@ namespace corsairs.xna.scenes.worldmap
                 float speed = 0.1f;
 
                 var distance = direction.Multiply((float)(speed * gameTime.ElapsedGameTime.TotalMilliseconds));
-                pos += distance;
+                var destination = pos + distance;
+                var destSquare = worldMap.Map.Locations[(int)destination.X / WorldMapScene.SquareSize, (int)destination.Y / WorldMapScene.SquareSize];
+
+                if (destSquare.IsWater)
+                {
+                    pos += distance;
+                }
+                else
+                {
+                    // hit land - stop!
+                    dest = pos;
+                    return;
+                }
             }
         }
 
