@@ -14,6 +14,7 @@ namespace corsairs.game
             return Path.Combine(Directory.GetCurrentDirectory(), "save.foo");
         }
         public static bool LoadExistingGame;
+        public static bool NewGame;
         public static WorldMap WorldMap; 
     }
 }

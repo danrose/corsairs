@@ -22,7 +22,7 @@ namespace corsairs.xna.scenes
         protected byte[] spritePriming = new byte[16];
         protected Texture2D tileset;
         protected WorldMap worldMap;
-        protected const int SquareSize = 8;
+        public const int SquareSize = 8;
         protected SpriteFont textFont;
         protected SpriteBatch spriteBatch;
         protected WMShip ship;
@@ -31,13 +31,23 @@ namespace corsairs.xna.scenes
         public WorldMapScene(Game game)
             : base(game)
         {
-            ship = new WMShip(Game);
-            Game.Components.Add(ship);
+            
+        }
+
+        public WorldMap Map
+        {
+            get { return worldMap; }
         }
 
         public override string Name
         {
             get { return SceneNames.Worldmap; }
+        }
+
+        protected void InitNewGame()
+        {
+            ship.MoveToStart();
+            GameState.NewGame = false;
         }
 
         public override void OnActivated()
@@ -70,6 +80,17 @@ namespace corsairs.xna.scenes
                 }
             }
 
+            if (ship == null)
+            {
+                ship = new WMShip(Game, this);
+                Game.Components.Add(ship);
+            }
+
+            if (GameState.NewGame)
+            {
+                InitNewGame();
+            }
+
             ship.OnActivated();
         }
 
@@ -80,6 +101,7 @@ namespace corsairs.xna.scenes
             if (Enabled == false && ship != null)
             {
                 ship.Enabled = false;
+                ship.Visible = false;
             }
         }
 

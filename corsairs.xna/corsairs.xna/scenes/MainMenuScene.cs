@@ -266,6 +266,7 @@ namespace corsairs.xna.scenes
         {
             AddMenuOption("Start New Game", () =>
                 {
+                    GameState.NewGame = true;
                     GameState.LoadExistingGame = false;
                     SceneManager.ChangeScene(SceneNames.Worldmap);
                 });
