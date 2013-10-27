@@ -23,5 +23,9 @@ namespace corsairs.xna
         public virtual void OnActivated()
         {
         }
+
+        public virtual void FirstLoad()
+        {  
+        }
     }
 }

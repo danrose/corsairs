@@ -13,6 +13,7 @@ namespace corsairs.xna
     {
         private static List<Scene> scenes = new List<Scene>();
         private static Scene currentScene;
+        private static List<string> init = new List<string>();
 
         public static void RegisterScenes(params Scene[] toRegister)
         {
@@ -49,6 +50,13 @@ namespace corsairs.xna
             }
 
             currentScene = scene;
+
+            if (!init.Contains(sceneName))
+            {
+                init.Add(sceneName);
+                scene.FirstLoad();
+            }
+
             scene.OnActivated();
             scene.Visible = scene.Enabled = true;
         }

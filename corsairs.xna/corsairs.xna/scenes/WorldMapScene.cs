@@ -44,10 +44,10 @@ namespace corsairs.xna.scenes
             get { return SceneNames.Worldmap; }
         }
 
-        protected void InitNewGame()
+        public override void FirstLoad()
         {
-            ship.MoveToStart();
-            GameState.NewGame = false;
+            ship = new WMShip(Game, this);
+            Game.Components.Add(ship);
         }
 
         public override void OnActivated()
@@ -78,17 +78,6 @@ namespace corsairs.xna.scenes
                     writer.Write(serialized);
                     writer.Close();
                 }
-            }
-
-            if (ship == null)
-            {
-                ship = new WMShip(Game, this);
-                Game.Components.Add(ship);
-            }
-
-            if (GameState.NewGame)
-            {
-                InitNewGame();
             }
 
             ship.OnActivated();

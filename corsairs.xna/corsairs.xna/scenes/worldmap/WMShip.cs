@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using corsairs.core.worldgen;
+using corsairs.game;
 
 namespace corsairs.xna.scenes.worldmap
 {
@@ -38,6 +39,12 @@ namespace corsairs.xna.scenes.worldmap
 
         public virtual void OnActivated()
         {
+            if (GameState.NewGame)
+            {
+                GameState.NewGame = false;
+                MoveToStart();
+            }
+
             Enabled = true;
             Visible = true;
         }
