@@ -82,6 +82,7 @@
     <Compile Include="scenes\SceneNames.cs" />
     <Compile Include="scenes\WorldMapScene.cs" />
     <Compile Include="scenes\worldmap\WMShip.cs" />
+    <Compile Include="SpriteUtils.cs" />
     <Compile Include="Vectors.cs" />
   </ItemGroup>
   <ItemGroup>

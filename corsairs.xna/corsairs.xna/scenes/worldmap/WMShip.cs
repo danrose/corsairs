@@ -17,10 +17,10 @@ namespace corsairs.xna.scenes.worldmap
         // position and waypoints
         protected List<Vector2> waypoints = new List<Vector2>();
         protected int currentWaypoint;
-        protected List<Vector2> dots = new List<Vector2>();
         protected Vector2 pos;
         protected Vector2 velocity;
         protected Vector2 startOfPath;
+        protected float lastJourneyLength;
 
         // graphics
         protected Texture2D shipTexture;
@@ -88,12 +88,7 @@ namespace corsairs.xna.scenes.worldmap
             spriteBatch.Begin();
             base.Draw(gameTime);
 
-            foreach (var dot in dots)
-            {
-                spriteBatch.Draw(lineTexture, new Rectangle((int)dot.X, (int)dot.Y, 8, 8),
-                    new Rectangle(24, 24, 8, 8),
-                    Color.White);
-            }
+            spriteBatch.DrawDottedSegments(lineTexture, 8, 24, 24, startOfPath, waypoints, 10);
 
             if (waypoints.Any())
             {
@@ -127,8 +122,14 @@ namespace corsairs.xna.scenes.worldmap
             } while (!water);
 
             waypoints.Clear();
-            dots.Clear();
             Enabled = true;
+        }
+
+        protected virtual void ResetJourney()
+        {
+            waypoints.Clear();
+            velocity = Vector2.Zero;
+            currentWaypoint = 0;
         }
 
         protected virtual void CheckForDestinationUpdate(MouseState mouse, KeyboardState keyboard)
@@ -143,8 +144,7 @@ namespace corsairs.xna.scenes.worldmap
                     // shift enqueues waypoints
                     if (!keyboard.IsKeyDown(Keys.LeftShift | Keys.RightShift))
                     {
-                        waypoints.Clear();
-                        currentWaypoint = 0;
+                        ResetJourney();
                     }
 
                     if (waypoints.Count == 0)
@@ -154,8 +154,8 @@ namespace corsairs.xna.scenes.worldmap
                     }
 
                     waypoints.Add(new Vector2(mouse.X, mouse.Y));
+                    RecalculateVelocity();
                     leftClicked = null;
-                    ResetDestination();
                 }
                 else if (leftClicked == null)
                 {
@@ -171,26 +171,6 @@ namespace corsairs.xna.scenes.worldmap
         }
 
         /// <summary>
-        /// Creates a series of points between two vectors
-        /// </summary>
-        protected virtual Vector2[] DrawPath(Vector2 from, Vector2 to)
-        {
-            var direction = to - from;
-            var normDirection = direction;
-            normDirection.Normalize();
-
-            // draw new path
-            var step = direction.Multiply(1f / 6);
-            var ret = new Vector2[6];
-            for (var i = 1; i < 7; i++)
-            {
-                ret[i - 1] = from + step.Multiply(i);
-            }
-
-            return ret;
-        }
-
-        /// <summary>
         /// Reset our velocity vector based on speed and the normalised
         /// direction vector to the first destination in the waypoint
         /// queue
@@ -199,6 +179,7 @@ namespace corsairs.xna.scenes.worldmap
         {
             if (waypoints.Count == 0)
             {
+                velocity = Vector2.Zero;
                 return;
             }
 
@@ -209,31 +190,10 @@ namespace corsairs.xna.scenes.worldmap
             velocity = speed * normDirection;
         }
 
-        /// <summary>
-        /// Redraw our destination and pathing dots
-        /// </summary>
-        protected virtual void ResetDestination()
-        {
-            dots.Clear();
-            if (waypoints.Count == 0)
-            {
-                return;
-            }
-
-            RecalculateVelocity();
-
-            Vector2 prev = startOfPath;
-            foreach (var waypoint in waypoints)
-            {
-                dots.AddRange(DrawPath(prev, waypoint));
-                prev = dots[dots.Count - 1];
-            }
-        }
-
         protected virtual void CollideWithLand()
         {
             waypoints.Clear();
-            ResetDestination();
+            ResetJourney();
         }
 
         /// <summary>
