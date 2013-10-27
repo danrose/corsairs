@@ -15,7 +15,8 @@ namespace corsairs.xna.scenes.worldmap
         protected WorldMapScene worldMap;
 
         // position and waypoints
-        protected Queue<Vector2> waypoints = new Queue<Vector2>();
+        protected List<Vector2> waypoints = new List<Vector2>();
+        protected int currentWaypoint;
         protected List<Vector2> dots = new List<Vector2>();
         protected Vector2 pos;
         protected Vector2 velocity;
@@ -143,6 +144,7 @@ namespace corsairs.xna.scenes.worldmap
                     if (!keyboard.IsKeyDown(Keys.LeftShift | Keys.RightShift))
                     {
                         waypoints.Clear();
+                        currentWaypoint = 0;
                     }
 
                     if (waypoints.Count == 0)
@@ -151,7 +153,7 @@ namespace corsairs.xna.scenes.worldmap
                         startOfPath = pos;
                     }
 
-                    waypoints.Enqueue(new Vector2(mouse.X, mouse.Y));
+                    waypoints.Add(new Vector2(mouse.X, mouse.Y));
                     leftClicked = null;
                     ResetDestination();
                 }
@@ -201,7 +203,7 @@ namespace corsairs.xna.scenes.worldmap
             }
 
             float speed = 0.1f;
-            var direction = waypoints.Peek() - pos;
+            var direction = waypoints[currentWaypoint] - pos;
             var normDirection = direction;
             normDirection.Normalize();
             velocity = speed * normDirection;
@@ -239,14 +241,23 @@ namespace corsairs.xna.scenes.worldmap
         /// </summary>
         protected virtual void MoveToDestination(GameTime gameTime)
         {
-            var dest = waypoints.Peek();
+            var dest = waypoints[currentWaypoint];
             var direction = dest - pos;
 
             // finish move if within 5px
             if (direction.ToLength() < 5)
             {
                 pos = dest;
-                waypoints.Dequeue();
+                if (currentWaypoint == waypoints.Count - 1)
+                {
+                    // if the last waypoint then empty the list and reset
+                    waypoints.Clear();
+                    currentWaypoint = 0;
+                }
+                else
+                {
+                    currentWaypoint++;
+                }
                 // recalc velocity so we move in the direction of the new waypoint
                 RecalculateVelocity();
                 return;
