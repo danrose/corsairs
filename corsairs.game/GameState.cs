@@ -15,6 +15,9 @@ namespace corsairs.game
         }
         public static bool LoadExistingGame;
         public static bool NewGame;
-        public static WorldMap WorldMap; 
+        public static WorldMap WorldMap;
+        public static int Width = 1024;
+        public static int MapWidth = 768;
+        public static int Col1Width = Width - MapWidth;
     }
 }

@@ -71,7 +71,10 @@ namespace corsairs.xna.scenes.worldmap
             var keyboard = Keyboard.GetState();
             var mouse = Mouse.GetState();
 
-            CheckForDestinationUpdate(mouse, keyboard);
+            if (mouse.X >= GameState.Col1Width && mouse.X <= GameState.Width && mouse.Y >= 0 && mouse.Y <= GameState.MapWidth)
+            {
+                CheckForDestinationUpdate(mouse, keyboard);
+            }
 
             if (waypoints.Any())
             {
@@ -111,7 +114,6 @@ namespace corsairs.xna.scenes.worldmap
         /// </summary>
         public virtual void MoveToStart()
         {
-            int x, y;
             bool water = false;
             var seed = new Random();
             Enabled = false;
@@ -120,13 +122,10 @@ namespace corsairs.xna.scenes.worldmap
                 var index = seed.Next(worldMap.Map.Locations.Count);
                 var loc = worldMap.Map.Locations[index];
                 water = loc.IsWater;
-                x = loc.X * WorldMapScene.SquareSize;
-                y = loc.Y * WorldMapScene.SquareSize;
+                pos = WorldMapScene.GetPixelFromCoord(loc.X, loc.Y);
             } while (!water);
 
-            pos = new Vector2(x, y);
             waypoints.Clear();
-            waypoints.Enqueue(pos);
             dots.Clear();
             Enabled = true;
         }
@@ -257,7 +256,8 @@ namespace corsairs.xna.scenes.worldmap
             var destination = pos + distance;
 
             // convert from pixel location to map square
-            var destSquare = worldMap.Map.Locations[(int)destination.X / WorldMapScene.SquareSize, (int)destination.Y / WorldMapScene.SquareSize];
+            var destIndex = WorldMapScene.GetCoordFromPixel(destination);
+            var destSquare = worldMap.Map.Locations[(int)destIndex.X, (int)destIndex.Y];
 
             if (destSquare.IsWater)
             {

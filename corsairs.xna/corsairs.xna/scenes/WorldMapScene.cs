@@ -22,7 +22,7 @@ namespace corsairs.xna.scenes
         protected byte[] spritePriming = new byte[16];
         protected Texture2D tileset;
         protected WorldMap worldMap;
-        public const int SquareSize = 8;
+        public const int SquareSize = 6;
         protected SpriteFont textFont;
         protected SpriteBatch spriteBatch;
         protected WMShip ship;
@@ -83,6 +83,22 @@ namespace corsairs.xna.scenes
             ship.OnActivated();
         }
 
+        public static Vector2 GetPixelFromCoord(int x, int y)
+        {
+            return new Vector2(
+                GameState.Col1Width + (x * SquareSize),
+                y * SquareSize
+            );
+        }
+
+        public static Vector2 GetCoordFromPixel(Vector2 pixel)
+        {
+            return new Vector2(
+                (pixel.X - GameState.Col1Width) / SquareSize,
+                pixel.Y / SquareSize
+            );
+        }
+
         protected override void OnEnabledChanged(object sender, EventArgs args)
         {
             base.OnEnabledChanged(sender, args);
@@ -123,11 +139,6 @@ namespace corsairs.xna.scenes
             OceanNamer.Initialise(waterAdjectives, waterNames, waterNouns, waterPatterns, waterPlurals);
         }
 
-        private double Magnitude(double x, double y)
-        {
-            return Math.Sqrt((x * x) + (y * y));
-        }
-
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -162,14 +173,10 @@ namespace corsairs.xna.scenes
                 {
                     var location = locations[x, y];
                     var spriteIndex = (spritePriming[(x ^ 37 * y) % 16] + (location.IsWater ? waterFrameOffset : 0)) % 3;
-                    //spriteBatch.Draw(texture, new Rectangle(x * 8, y * 8, 8, 8), location.Biome == null ? Color.Black : colourMap[location.Biome.DebugSymbol]);
-                    //spriteBatch.Draw(texture, new Rectangle(x * 8, y * 8, 8, 8), new Color(location.IsWater ? 128 : 0, location.IsWater ? 128 : 0, location.IsWater ? 128 : 0));
-                    //spriteBatch.Draw(texture, new Rectangle(x * 8, y * 8, 8, 8), new Color(location.Drainage, location.Drainage,location.Drainage));
-                    //spriteBatch.Draw(texture, new Rectangle(x * 8, y * 8, 8, 8), new Color(location.Height, location.Height,location.Height));
                     
-                    spriteBatch.Draw(tileset, 
-                        new Rectangle(x * SquareSize, y * SquareSize, SquareSize, SquareSize), 
-                        new Rectangle((int)location.Biome.DebugSymbol * SquareSize, spriteIndex * SquareSize, SquareSize, SquareSize),
+                    spriteBatch.Draw(tileset,
+                        new Rectangle(GameState.Col1Width + x * SquareSize, y * SquareSize, SquareSize, SquareSize), 
+                        new Rectangle((int)location.Biome.DebugSymbol * 8, spriteIndex * 8, SquareSize, SquareSize),
                         Color.White);
                 }
             }

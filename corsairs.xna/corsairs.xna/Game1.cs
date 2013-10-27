@@ -12,6 +12,7 @@ using corsairs.core.worldgen;
 using System.Diagnostics;
 using System.IO;
 using corsairs.xna.scenes;
+using corsairs.game;
 
 namespace corsairs.xna
 {
@@ -27,8 +28,8 @@ namespace corsairs.xna
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.IsFullScreen = false;
-            graphics.PreferredBackBufferHeight = 1024;
-            graphics.PreferredBackBufferWidth = 1024;
+            graphics.PreferredBackBufferHeight = GameState.MapWidth;
+            graphics.PreferredBackBufferWidth = GameState.Width;
             IsMouseVisible = true;
             Content.RootDirectory = "Content";
         }
