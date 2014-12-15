@@ -88,7 +88,7 @@ namespace corsairs.xna.scenes.worldmap
             spriteBatch.Begin();
             base.Draw(gameTime);
 
-            spriteBatch.DrawDottedSegments(lineTexture, 8, 24, 24, startOfPath, waypoints, 10);
+            spriteBatch.DrawDottedSegments(lineTexture, 8, 24, 24, startOfPath, waypoints, 8);
 
             if (waypoints.Any())
             {
